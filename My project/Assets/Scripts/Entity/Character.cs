@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 public class Character : Entity, IDamageable
 {
     public string name { get; private set; }
