@@ -21,7 +21,18 @@ public class CharactersManager : MonoBehaviour
     private void Awake()
     {
         if (_instance != null) Destroy(this.gameObject);
-        else _instance = this;
+        else
+        {
+            DontDestroyOnLoad(this);
+            _instance = this;
+        }
+
         Characters = new Dictionary<int, Character>();
+    }
+
+    private void Start()
+    {
+        DBReader.Instance.ReadDB("/DB/CharacterDB/Character", 
+            "Select * From Character", new []{"ID", "Name", "Health", "Damage", "Mood"});
     }
 }
