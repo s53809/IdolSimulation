@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using Mono.Data.Sqlite;
 using System.IO;
 using UnityEngine.Networking;
 using UnityEngine;
+
 public class DBReader : MonoBehaviour
 {
     private bool isAlreadyRunning = false;
+    
     
     public void ReadDB(string path, string query, string[] items)
     {
@@ -41,11 +44,11 @@ public class DBReader : MonoBehaviour
         string str = string.Empty;
         if (Application.platform == RuntimePlatform.Android)
         {
-            str = "URL=file:" + Application.persistentDataPath + path + ".db";
+            str = "URI=file:" + Application.persistentDataPath + path + ".db";
         }
         else
         {
-            str = "URL=file:" + Application.dataPath + path + ".db";
+            str = "URI=file:" + Application.dataPath + path + ".db";
         }
         return str;
     }
@@ -62,7 +65,7 @@ public class DBReader : MonoBehaviour
             Debug.Log("첫번째 속성");
             foreach (var item in items)
             {
-                Debug.Log(dataReader[item]); //#todo: 어떻게 데이터를 받아야할지 생각하기
+                Debug.Log($"{dataReader[item]} : {dataReader[item].GetType()}"); //Todo: 어떻게 데이터를 받아야할지 생각하기
             }
         }
         
@@ -77,9 +80,11 @@ public class DBReader : MonoBehaviour
     {
         isAlreadyRunning = true;
         string filepath = string.Empty;
+        string[] paties = dbFilePath.Split('/');
+        string dbFileName = '/' + paties[paties.Length - 1];
         if (Application.platform == RuntimePlatform.Android)
         {
-            filepath = Application.persistentDataPath + "/" + dbFilePath + ".db";
+            filepath = Application.persistentDataPath + dbFileName + ".db";
             if (!File.Exists(filepath))
             {
                 UnityWebRequest unityWebRequest
@@ -90,14 +95,15 @@ public class DBReader : MonoBehaviour
         }
         else
         {
-            filepath = Application.dataPath + dbFilePath + ".db";
+            filepath = Application.dataPath + dbFileName + ".db";
             if (!File.Exists(filepath))
             {
                 File.Copy(Application.streamingAssetsPath + dbFilePath + ".db", filepath);
             }
+            Debug.Log(filepath);
         }
         
-        DataBaseRead(dbFilePath, query, items);
+        DataBaseRead(dbFileName, query, items);
         
         isAlreadyRunning = false;
     }

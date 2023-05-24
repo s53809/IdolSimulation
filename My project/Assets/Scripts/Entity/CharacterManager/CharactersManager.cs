@@ -33,6 +33,6 @@ public class CharactersManager : MonoBehaviour
     private void Start()
     {
         DBReader.Instance.ReadDB("/DB/CharacterDB/Character", 
-            "Select * From Character", new []{"ID", "Name", "Health", "Damage", "Mood"});
+            "Select * From Characters", new []{"ID", "Name", "Health", "Damage", "Mood"});
     }
 }
