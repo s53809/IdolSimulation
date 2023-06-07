@@ -9,13 +9,21 @@ using UnityEngine;
 
 public class DBReader : MonoBehaviour
 {
-    private bool isAlreadyRunning = false;
-    
-    
-    public void ReadDB(string path, string query, string[] items)
+    private bool _isAlreadyRunning = false;
+    private List<DBData> _result;
+    public List<DBData> ReadDB(string path, string query, string[] items)
     {
-        if (!isAlreadyRunning) StartCoroutine(DBCreate(path, query, items));
-        else Debug.LogError("DB Query is already Running!");
+        if (!_isAlreadyRunning) {
+            _result = new List<DBData>();
+            StartCoroutine(DBCreate(path, query, items));
+        }
+        else {
+            Debug.LogError("DB Query is already being run");
+            return new List<DBData>();
+        }
+        
+
+        return _result;
     }
 
     
@@ -62,11 +70,22 @@ public class DBReader : MonoBehaviour
         IDataReader dataReader = dbCommand.ExecuteReader();
         while (dataReader.Read())
         {
-            Debug.Log("첫번째 속성");
-            foreach (var item in items)
-            {
-                Debug.Log($"{dataReader[item]} : {dataReader[item].GetType()}"); //Todo: 어떻게 데이터를 받아야할지 생각하기
+            DBData temp = new DBData();
+            foreach (var item in items) {
+                if (dataReader[item].GetType().ToString() == "System.Single") { //이 코드 솔직히 존나 마음에 안듬 나중에 고칠듯
+                    temp.floatData.Add(item, (float)dataReader[item]);
+                }
+                else if (dataReader[item].GetType().ToString() == "System.String") {
+                    temp.stringData.Add(item, (string)dataReader[item]);
+                }
+                else if (dataReader[item].GetType().ToString() == "System.Int64") {
+                    temp.intData.Add(item, (int)(Int64)dataReader[item]);
+                }
+                else {
+                    Debug.LogError($"dataReader is reading undefined type : {dataReader[item].GetType()}");
+                }
             }
+            _result.Add(temp);
         }
         
         dataReader.Dispose();
@@ -78,7 +97,7 @@ public class DBReader : MonoBehaviour
     }
     private IEnumerator DBCreate(string dbFilePath, string query, string[] items)
     {
-        isAlreadyRunning = true;
+        _isAlreadyRunning = true;
         string filepath = string.Empty;
         string[] paties = dbFilePath.Split('/');
         string dbFileName = '/' + paties[paties.Length - 1];
@@ -105,6 +124,6 @@ public class DBReader : MonoBehaviour
         
         DataBaseRead(dbFileName, query, items);
         
-        isAlreadyRunning = false;
+        _isAlreadyRunning = false;
     }
 }
