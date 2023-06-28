@@ -1,4 +1,4 @@
-public class Enemy : Entity, IDamageable
+public class Enemy : Entity
 {
     public Enemy(int id, int health, int damage)
     {
@@ -12,14 +12,5 @@ public class Enemy : Entity, IDamageable
         this.id = id;
         this.health = 0;
         this.damage = 0;
-    }
-
-    public void Damaged(int damage)
-    {
-        if (this.health - damage <= 0)
-        {
-            //Todo: 죽었을 때 상황 만들기
-        }
-        else this.health -= damage;
     }
 }

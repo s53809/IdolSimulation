@@ -72,7 +72,7 @@ public class DBReader : MonoBehaviour
         {
             DBData temp = new DBData();
             foreach (var item in items) {
-                if (dataReader[item].GetType().ToString() == "System.Single") { //이 코드 솔직히 존나 마음에 안듬 나중에 고칠듯
+                if (dataReader[item].GetType().ToString() == "System.Single") {
                     temp.floatData.Add(item, (float)dataReader[item]);
                 }
                 else if (dataReader[item].GetType().ToString() == "System.String") {
